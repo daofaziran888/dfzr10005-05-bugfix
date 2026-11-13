@@ -70,7 +70,7 @@ import { request } from '@/api/client'
 type Row = Record<string, string | number | null>
 
 const ENDPOINT = '/api/tier'
-const columns = ["分层编号", "分层名称", "层级别名", "数据粒度", "存储格式", "压缩策略", "访问模式", "分层状态"]
+const columns = ["分层编号", "分层名称", "层级别名", "数据粒度", "存储格式", "压缩策略", "访问模式", "分层状态", "成本报告状态"]
 const actions = ["定义分层", "废弃分层", "归档分层"]
 const statuses = ["草稿", "已定义", "生效中", "已废弃"]
 const stats = [{"label": "分层定义总数", "value": 0}, {"label": "已定义分层", "value": 0}, {"label": "生效中分层", "value": 0}]

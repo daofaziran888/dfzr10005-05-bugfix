@@ -28,7 +28,25 @@ class TierService:
             rows = [row for row in rows if row.get("status") == status]
         total = len(rows)
         start = max(page - 1, 0) * size
-        return rows[start:start + size], total
+        paged = rows[start:start + size]
+        report_status = self._cost_report_status_by_tier()
+        # 联动成本分析报告：按目标分层匹配，把报告最新状态同步到分层定义列表。
+        items = []
+        for row in paged:
+            item = dict(row)
+            item["成本报告状态"] = report_status.get(str(row.get("分层名称", "")).strip(), "—")
+            items.append(item)
+        return items, total
+
+    @staticmethod
+    def _cost_report_status_by_tier() -> dict[str, str]:
+        """目标分层 -> 成本分析报告最新状态（id 大的报告后写入，覆盖旧值）。"""
+        mapping: dict[str, str] = {}
+        for row in sorted(store.rows("cost"), key=lambda item: int(item.get("id", 0))):
+            tier_name = str(row.get("目标分层") or "").strip()
+            if tier_name:
+                mapping[tier_name] = str(row.get("status", ""))
+        return mapping
 
     def get_entry(self, entry_id: int) -> dict[str, Any] | None:
         return store.find(MODULE, entry_id)
